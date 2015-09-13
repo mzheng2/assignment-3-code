@@ -1,0 +1,209 @@
+import java.io.*;
+import java.util.*;
+
+public class TheGameOfLife {
+	static String text = "";
+	static int count = 0;
+
+	public static void main(String[] args) {
+		final char[][] currGen = new char[35][85];
+		final char[][] newGen = new char[35][85];
+		final char[][] emptyGen = new char[25][75];
+		final char[][] displayGen = new char[25][75];
+		System.out.println("Welcome to the Game of Life.");
+		readFiles();
+		filesToArrayOf(currGen);
+		dotsTo(emptyGen);
+		int genNum = 0;
+		while (true) {
+			genNum++;
+			System.out.println("Please choose an option:\n1: View generation #"
+					+ genNum + "\nAny other number/letter: Exit ");
+			Scanner choice = new Scanner(System.in);
+			String result = choice.nextLine();
+			if (result.equals("1")) {
+				countAndReplace(currGen, newGen);
+				bigToSmall(newGen, displayGen);
+				print(displayGen);
+				if (countDotsOf(displayGen) == countDotsOf(emptyGen)) {
+					System.out.println("Everyone has died. Abandon all hope.");
+					System.exit(0);
+				}
+				swap(currGen, newGen);
+
+			} else {
+				System.out.println("You have just exited.");
+				System.exit(0);
+			}
+		}
+	}
+
+	public static void readFiles() {
+		String file;
+		String line;
+		Scanner rd;
+		Scanner scan;
+		try {
+			System.out
+					.println("What file would you like to use with the Game of Life (Please include .txt if not does so): ");
+			rd = new Scanner(System.in);
+			file = rd.nextLine();
+			scan = new Scanner(new File(file));
+			while (scan.hasNextLine()) {
+				line = scan.nextLine();
+				text += "....." + line + "....." + "\n";
+			}
+			scan.close();
+		} catch (Exception e) {
+			System.out.println("That file does not exist. Please try again.");
+			System.exit(0);
+		}
+	}
+
+	public static char[][] filesToArrayOf(char testGen[][]) {
+		String[] textArr = text.split("\n");
+		for (int a = 0; a < 5; a++) {
+			for (int b = 0; b < 85; b++) {
+				testGen[a][b] = '.';
+			}
+
+		}
+		for (int i = 5; i < 30; i++) {
+			testGen[i] = textArr[i - 5].toCharArray();
+		}
+		for (int c = 30; c < 35; c++) {
+			for (int d = 0; d < 85; d++) {
+				testGen[c][d] = '.';
+			}
+		}
+		return testGen;
+	}
+
+	public static char[][] countAndReplace(char oldArr[][], char newArr[][]) {
+		for (int i = 0; i < 35; i++) {
+			for (int j = 0; j < 85; j++) {
+				if (oldArr[i][j] == 'X') {
+					if (i > 0 && j > 0 && oldArr[i - 1][j - 1] == 'X') {
+						count++;
+					}
+					if (i > 0 && oldArr[i - 1][j] == 'X') {
+						count++;
+					}
+					if (i > 0 && j != 84 && oldArr[i - 1][j + 1] == 'X') {
+						count++;
+					}
+					if (j > 0 && oldArr[i][j - 1] == 'X') {
+						count++;
+					}
+					if (j < 84 && oldArr[i][j + 1] == 'X') {
+						count++;
+					}
+					if (i < 34 && j > 0 && oldArr[i + 1][j - 1] == 'X') {
+						count++;
+					}
+					if (i < 34 && oldArr[i + 1][j] == 'X') {
+						count++;
+					}
+					if (i < 34 && j < 84 && oldArr[i + 1][j + 1] == 'X') {
+						count++;
+					}
+				} else {
+					if (i > 0 && j > 0 && oldArr[i - 1][j - 1] == 'X') {
+						count++;
+					}
+					if (i > 0 && oldArr[i - 1][j] == 'X') {
+						count++;
+					}
+					if (i > 0 && j != 84 && oldArr[i - 1][j + 1] == 'X') {
+						count++;
+					}
+					if (j > 0 && oldArr[i][j - 1] == 'X') {
+						count++;
+					}
+					if (j < 84 && oldArr[i][j + 1] == 'X') {
+						count++;
+					}
+					if (i < 34 && j > 0 && oldArr[i + 1][j - 1] == 'X') {
+						count++;
+					}
+					if (i < 34 && oldArr[i + 1][j] == 'X') {
+						count++;
+					}
+					if (i < 34 && j < 84 && oldArr[i + 1][j + 1] == 'X') {
+						count++;
+					}
+				}
+				if (oldArr[i][j] == 'X' && count == 3 || oldArr[i][j] == 'X'
+						&& count == 2) {
+					newArr[i][j] = 'X';
+				}
+				if (oldArr[i][j] == 'X' && count > 3 || oldArr[i][j] == 'X'
+						&& count < 2) {
+					newArr[i][j] = '.';
+				}
+				if (oldArr[i][j] == '.' && count == 3) {
+					newArr[i][j] = 'X';
+				}
+				if (oldArr[i][j] == '.' && count != 3) {
+					newArr[i][j] = '.';
+				}
+				clearCount();
+			}
+		}
+		return newArr;
+	}
+
+	public static char[][] bigToSmall(char big[][], char small[][]) {
+		for (int i = 0; i < 25; i++) {
+			for (int j = 0; j < 75; j++) {
+				small[i][j] = big[i + 5][j + 5];
+			}
+		}
+		return small;
+	}
+
+	public static char[][] print(char print[][]) {
+		for (int i = 0; i < 25; i++) {
+			for (int j = 0; j < 75; j++) {
+				System.out.print(print[i][j]);
+			}
+			System.out.println();
+		}
+		return print;
+	}
+
+	public static char[][] swap(char oldGen[][], char nextGen[][]) {
+		for (int i = 0; i < 35; i++) {
+			for (int j = 0; j < 85; j++) {
+				oldGen[i][j] = nextGen[i][j];
+			}
+		}
+		return oldGen;
+	}
+
+	public static char[][] dotsTo(char emptyArr[][]) {
+		for (int i = 0; i < 25; i++) {
+			for (int j = 0; j < 75; j++) {
+				emptyArr[i][j] = '.';
+			}
+		}
+		return emptyArr;
+	}
+
+	public static int countDotsOf(char compareArr[][]) {
+		int number = 0;
+		for (int i = 0; i < 25; i++) {
+			for (int j = 0; j < 75; j++) {
+				if (compareArr[i][j] == '.') {
+					number++;
+				}
+			}
+		}
+		return number;
+	}
+
+	public static int clearCount() {
+		count = 0;
+		return count;
+	}
+}
