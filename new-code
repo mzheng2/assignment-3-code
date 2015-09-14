@@ -61,11 +61,11 @@ public class TheGameOfLife {
 		}
 	}
 
-	public static char[][] StringToArrayOf(char testGen[][]) {
+	public static char[][] StringToArrayOf(char testGeneration[][]) {
 		String[] textArr = OrganismAndDeadspaces.split("\n");
 		for (int a = 0; a < 5; a++) {
 			for (int b = 0; b < 85; b++) {
-				testGen[a][b] = '.';
+				testGeneration[a][b] = '.';
 			}
 
 		}
