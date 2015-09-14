@@ -1,1 +1,210 @@
+import java.io.*;
+import java.util.*;
 
+public class TheGameOfLife {
+	static String OrganismAndDeadspaces = "";
+	static int count = 0;
+	static final char[][] currentGenerationArray = new char[35][85];
+	static final char[][] newGenerationArray = new char[35][85];
+	static final char[][] emptyGenerationArray = new char[25][75];
+	static final char[][] displayGenerationArray = new char[25][75];
+	
+	public static void main(String[] args) {
+		System.out.println("Welcome to the Game of Life.");
+		readFilesToString();
+		StringToArrayOf(currentGenerationArray);
+		deadSpacesTo(emptyGenerationArray);
+		int genNum = 0;
+		while (true) {
+			genNum++;
+			System.out.println("Please choose an option:\n1: View generation #"
+					+ genNum + "\nAny other number/letter: Exit ");
+			@SuppressWarnings("resource")
+			Scanner choice = new Scanner(System.in);
+			String result = choice.nextLine();
+			if (result.equals("1")) {
+				countAndReplace(currentGenerationArray, newGenerationArray);
+				prepareArrayToBePrinted(newGenerationArray, displayGenerationArray);
+				printArray(displayGenerationArray);
+				if (countDeadSpacesOf(displayGenerationArray) == countDeadSpacesOf(emptyGenerationArray)) {
+					System.out.println("Everyone has died. Abandon all hope.");
+					System.exit(0);
+				}
+				swapGenerationOf(currentGenerationArray, newGenerationArray);
+
+			} else {
+				System.out.println("You have just exited.");
+				System.exit(0);
+			}
+		}
+	}
+
+	public static void readFilesToString() {
+		String file;
+		String line;
+		Scanner rd;
+		Scanner scan;
+		try {
+			System.out
+					.println("What file would you like to use with the Game of Life (Please include .txt if not does so): ");
+			rd = new Scanner(System.in);
+			file = rd.nextLine();
+			scan = new Scanner(new File(file));
+			while (scan.hasNextLine()) {
+				line = scan.nextLine();
+				OrganismAndDeadspaces += "....." + line + "....." + "\n";
+			}
+			scan.close();
+		} catch (Exception e) {
+			System.out.println("That file does not exist. Please try again.");
+			System.exit(0);
+		}
+	}
+
+	public static char[][] StringToArrayOf(char testGen[][]) {
+		String[] textArr = OrganismAndDeadspaces.split("\n");
+		for (int a = 0; a < 5; a++) {
+			for (int b = 0; b < 85; b++) {
+				testGen[a][b] = '.';
+			}
+
+		}
+		for (int i = 5; i < 30; i++) {
+			testGen[i] = textArr[i - 5].toCharArray();
+		}
+		for (int c = 30; c < 35; c++) {
+			for (int d = 0; d < 85; d++) {
+				testGen[c][d] = '.';
+			}
+		}
+		return testGen;
+	}
+
+	public static char[][] countAndReplace(char oldArray[][], char newArray[][]) {
+		for (int i = 0; i < 35; i++) {
+			for (int j = 0; j < 85; j++) {
+				if (oldArray[i][j] == 'X') {
+					if (i > 0 && j > 0 && oldArray[i - 1][j - 1] == 'X') {
+						count++;
+					}
+					if (i > 0 && oldArray[i - 1][j] == 'X') {
+						count++;
+					}
+					if (i > 0 && j != 84 && oldArray[i - 1][j + 1] == 'X') {
+						count++;
+					}
+					if (j > 0 && oldArray[i][j - 1] == 'X') {
+						count++;
+					}
+					if (j < 84 && oldArray[i][j + 1] == 'X') {
+						count++;
+					}
+					if (i < 34 && j > 0 && oldArray[i + 1][j - 1] == 'X') {
+						count++;
+					}
+					if (i < 34 && oldArray[i + 1][j] == 'X') {
+						count++;
+					}
+					if (i < 34 && j < 84 && oldArray[i + 1][j + 1] == 'X') {
+						count++;
+					}
+				} else {
+					if (i > 0 && j > 0 && oldArray[i - 1][j - 1] == 'X') {
+						count++;
+					}
+					if (i > 0 && oldArray[i - 1][j] == 'X') {
+						count++;
+					}
+					if (i > 0 && j != 84 && oldArray[i - 1][j + 1] == 'X') {
+						count++;
+					}
+					if (j > 0 && oldArray[i][j - 1] == 'X') {
+						count++;
+					}
+					if (j < 84 && oldArray[i][j + 1] == 'X') {
+						count++;
+					}
+					if (i < 34 && j > 0 && oldArray[i + 1][j - 1] == 'X') {
+						count++;
+					}
+					if (i < 34 && oldArray[i + 1][j] == 'X') {
+						count++;
+					}
+					if (i < 34 && j < 84 && oldArray[i + 1][j + 1] == 'X') {
+						count++;
+					}
+				}
+				if (oldArray[i][j] == 'X' && count == 3 || oldArray[i][j] == 'X'
+						&& count == 2) {
+					newArray[i][j] = 'X';
+				}
+				if (oldArray[i][j] == 'X' && count > 3 || oldArray[i][j] == 'X'
+						&& count < 2) {
+					newArray[i][j] = '.';
+				}
+				if (oldArray[i][j] == '.' && count == 3) {
+					newArray[i][j] = 'X';
+				}
+				if (oldArray[i][j] == '.' && count != 3) {
+					newArray[i][j] = '.';
+				}
+				clearCount();
+			}
+		}
+		return newArray;
+	}
+
+	public static char[][] prepareArrayToBePrinted(char beforeArray[][], char afterArray[][]) {
+		for (int i = 0; i < 25; i++) {
+			for (int j = 0; j < 75; j++) {
+				afterArray[i][j] = beforeArray[i + 5][j + 5];
+			}
+		}
+		return afterArray;
+	}
+
+	public static char[][] printArray(char printedArray[][]) {
+		for (int i = 0; i < 25; i++) {
+			for (int j = 0; j < 75; j++) {
+				System.out.print(printedArray[i][j]);
+			}
+			System.out.println();
+		}
+		return printedArray;
+	}
+
+	public static char[][] swapGenerationOf(char oldGen[][], char nextGen[][]) {
+		for (int i = 0; i < 35; i++) {
+			for (int j = 0; j < 85; j++) {
+				oldGen[i][j] = nextGen[i][j];
+			}
+		}
+		return oldGen;
+	}
+
+	public static char[][] deadSpacesTo(char emptyArray[][]) {
+		for (int i = 0; i < 25; i++) {
+			for (int j = 0; j < 75; j++) {
+				emptyArray[i][j] = '.';
+			}
+		}
+		return emptyArray;
+	}
+
+	public static int countDeadSpacesOf(char comparisonArray[][]) {
+		int number = 0;
+		for (int i = 0; i < 25; i++) {
+			for (int j = 0; j < 75; j++) {
+				if (comparisonArray[i][j] == '.') {
+					number++;
+				}
+			}
+		}
+		return number;
+	}
+
+	public static int clearCount() {
+		count = 0;
+		return count;
+	}
+}
