@@ -62,7 +62,7 @@ public class TheGameOfLife {
 	}
 
 	public static char[][] StringToArrayOf(char testGeneration[][]) {
-		String[] textArr = OrganismAndDeadspaces.split("\n");
+		String[] StringArray = OrganismAndDeadspaces.split("\n");
 		for (int a = 0; a < 5; a++) {
 			for (int b = 0; b < 85; b++) {
 				testGeneration[a][b] = '.';
@@ -70,14 +70,14 @@ public class TheGameOfLife {
 
 		}
 		for (int i = 5; i < 30; i++) {
-			testGen[i] = textArr[i - 5].toCharArray();
+			testGeneration[i] = StringArray[i - 5].toCharArray();
 		}
 		for (int c = 30; c < 35; c++) {
 			for (int d = 0; d < 85; d++) {
-				testGen[c][d] = '.';
+				testGeneration[c][d] = '.';
 			}
 		}
-		return testGen;
+		return testGeneration;
 	}
 
 	public static char[][] countAndReplace(char oldArray[][], char newArray[][]) {
